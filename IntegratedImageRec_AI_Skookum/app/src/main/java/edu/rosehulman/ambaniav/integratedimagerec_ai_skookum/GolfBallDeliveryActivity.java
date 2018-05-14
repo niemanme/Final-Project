@@ -27,9 +27,13 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
      * Constant used with logging that you'll see later.
      */
     public static final String TAG = "GolfBallDelivery";
+    private static final int LEFT_PWM_VALUE_FOR_STRAIGHT = 245;
+    private static final int RIGHT_PWM_VALUE_FOR_STRAIGHT=255;
+    private static final int LOWEST_DESIRABLE_DUTY_CYCLE=150;
 
     public enum State {
         READY_FOR_MISSION,
+        INITIAL_STRAIGHT,
         NEAR_BALL_SCRIPT,
         DRIVE_TOWARDS_FAR_BALL,
         FAR_BALL_SCRIPT,
@@ -38,11 +42,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         SEEKING_HOME,
 
 
-        INITIAL_STRAIGHT,
-        GPS_SEEK1,
-        CONE_SEEK1,
-        DROP1,
-        GPS_SEEK2,
 
 
     }
@@ -407,10 +406,27 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
     }
 
-    private void seekTargetAt(double x, double y) {
+    private void seekTargetAt(double xTarget, double yTarget) {
 
-        // TODO: Do the right thing NOT this...
-        sendWheelSpeed((int)x, (int)y);
+        Toast.makeText(this, "Seeking", Toast.LENGTH_SHORT).show();
+        int leftDutyCycle = LEFT_PWM_VALUE_FOR_STRAIGHT;
+        int rightDutyCycle = RIGHT_PWM_VALUE_FOR_STRAIGHT;
+        double targetHeading = NavUtils.getTargetHeading(mCurrentGpsX, mCurrentGpsY, xTarget, yTarget);
+        double leftTurnAmount = NavUtils.getLeftTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
+        double rightTurnAmount = NavUtils.getRightTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
+        if (leftTurnAmount < rightTurnAmount) {
+            leftDutyCycle = LEFT_PWM_VALUE_FOR_STRAIGHT - (int) (leftTurnAmount); // Using a VERY simple plan. :)
+            leftDutyCycle = Math.max(leftDutyCycle, LOWEST_DESIRABLE_DUTY_CYCLE);
+        } else {
+            rightDutyCycle = RIGHT_PWM_VALUE_FOR_STRAIGHT - (int) (rightTurnAmount); // Could also scale it.
+            rightDutyCycle = Math.max(rightDutyCycle, LOWEST_DESIRABLE_DUTY_CYCLE);
+        }
+
+//        mCommand = "WHEEL SPEED FORWARD " + leftDutyCycle + " FORWARD " + rightDutyCycle;
+//        mCommandTextView.setText(mCommand);
+        sendWheelSpeed((int) leftDutyCycle, (int) rightDutyCycle);
+        //mTargetHeadingTextView.setText(" " + (int) (targetHeading));
+
     }
 
 
