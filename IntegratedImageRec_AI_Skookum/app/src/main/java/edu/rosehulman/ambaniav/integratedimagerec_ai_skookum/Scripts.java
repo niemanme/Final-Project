@@ -12,7 +12,7 @@ public class Scripts {
 
     private GolfBallDeliveryActivity mActivity;
 
-    private int ARM_REMOVAL_TIME = 3000;
+    private int ARM_REMOVAL_TIME = 5000;
 
     public Scripts(GolfBallDeliveryActivity activity) {
         mActivity = activity;

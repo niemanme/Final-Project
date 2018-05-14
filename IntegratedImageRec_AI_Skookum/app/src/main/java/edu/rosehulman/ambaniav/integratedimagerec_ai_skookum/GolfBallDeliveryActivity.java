@@ -29,15 +29,33 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     public static final String TAG = "GolfBallDelivery";
     private static final int LEFT_PWM_VALUE_FOR_STRAIGHT = 245;
     private static final int RIGHT_PWM_VALUE_FOR_STRAIGHT=255;
+    private static final int LEFT_PWM_VALUE_FOR_TURN = 170;
+    private static final int RIGHT_PWM_VALUE_FOR_TURN = 180;
+
+
     private static final int LOWEST_DESIRABLE_DUTY_CYCLE=150;
+
+    private static final double MAX_SIZE_PERCENTAGE = 0.0025; // Criteria to drop the ball
+    private static final double LEFT_PROPORTIONAL_CONTROL = 40;
+    private static final double RIGHT_PROPORTIONAL_CONTROL = 35;
+
+    // Go into Image recognition mode for that ball/mission, when the GPS is within the 20ft range
+    // and a small cone has been detected (0.1% = 0.001)
+    // If Image rec control takes robot 40ft or more away from cone, revert back to GPS control( Drive Towards)
+    //
+
 
     public enum State {
         READY_FOR_MISSION,
         INITIAL_STRAIGHT,
+        DRIVE_TOWARDS_NEAR_BALL,
+        IMAGE_REC_NEAR,
         NEAR_BALL_SCRIPT,
         DRIVE_TOWARDS_FAR_BALL,
+        IMAGE_REC_FAR,
         FAR_BALL_SCRIPT,
         DRIVE_TOWARDS_HOME,
+        IMAGE_REC_HOME,
         WAITING_FOR_PICKUP,
         SEEKING_HOME,
 
@@ -96,6 +114,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
     protected LinearLayout mJumbotronLinearLayout;
 
+
+    public boolean doImageRec=false;
     // ---------------------- End of UI References ----------------------
 
 
@@ -204,7 +224,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     }
 
     public void setState(State newState) {
-        if (mState == State.READY_FOR_MISSION && newState != State.NEAR_BALL_SCRIPT) {
+        if (mState == State.READY_FOR_MISSION && newState != State.INITIAL_STRAIGHT) {
             return;
         }
         mStateStartTime = System.currentTimeMillis();
@@ -218,6 +238,14 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 mJumboGoOrMissionCompleteButton.setText("Go!");
                 sendWheelSpeed(0, 0);
                 break;
+            case INITIAL_STRAIGHT:
+                sendWheelSpeed(LEFT_PWM_VALUE_FOR_STRAIGHT,RIGHT_PWM_VALUE_FOR_STRAIGHT);
+                break;
+            case DRIVE_TOWARDS_NEAR_BALL:
+                //Nothing here. All in loop
+                break;
+            case IMAGE_REC_NEAR:
+                break;
             case NEAR_BALL_SCRIPT:
                 mGpsInfoTextView.setText("---");
                 mGuessXYTextView.setText("---");
@@ -227,11 +255,15 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case DRIVE_TOWARDS_FAR_BALL:
                 // Nothing here. All the work happens in the loop function.
                 break;
+            case IMAGE_REC_FAR:
+                break;
             case FAR_BALL_SCRIPT:
                 mScripts.farBallScript();
                 break;
             case DRIVE_TOWARDS_HOME:
                 // Nothing here. All the work happens in the loop function.
+                break;
+            case IMAGE_REC_HOME:
                 break;
             case WAITING_FOR_PICKUP:
                 sendWheelSpeed(0,0);
@@ -256,6 +288,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
         for(int i=1; i<4; i++){
             setBallPositions(i,mLocationColors[i-1]);
+
         }
 
     }
@@ -382,15 +415,30 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         switch (mState) {
             case READY_FOR_MISSION:
                 break;
+            case INITIAL_STRAIGHT:
+                if (getStateTimeMs() > 5000){
+                    setState(State.DRIVE_TOWARDS_NEAR_BALL);
+                }
+                break;
+            case DRIVE_TOWARDS_NEAR_BALL:
+                seekTargetAt(NEAR_BALL_GPS_X, mNearBallGpsY);
+                break;
+            case IMAGE_REC_NEAR:
+                break;
             case NEAR_BALL_SCRIPT:
+
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
                 seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
+                break;
+            case IMAGE_REC_FAR:
                 break;
             case FAR_BALL_SCRIPT:
                 break;
             case DRIVE_TOWARDS_HOME:
                 seekTargetAt(0,0);
+                break;
+            case IMAGE_REC_HOME:
                 break;
             case WAITING_FOR_PICKUP:
                 if (getStateTimeMs() > 8000) {
@@ -464,6 +512,20 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
         gpsInfo += "   " + mGpsCounter;
         mGpsInfoTextView.setText(gpsInfo);
+
+        if (mState == State.DRIVE_TOWARDS_NEAR_BALL) {
+            double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, FAR_BALL_GPS_X,
+                    mFarBallGpsY);
+            if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT) {
+                if(doImageRec){
+                    setState(State.IMAGE_REC_NEAR);
+                }
+                else{
+
+                    setState(State.NEAR_BALL_SCRIPT);
+                }
+            }
+        }
 
         if (mState == State.DRIVE_TOWARDS_FAR_BALL) {
             double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, FAR_BALL_GPS_X,
@@ -543,6 +605,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mTeamChangeButton.setBackgroundResource(R.drawable.red_button);
             mTeamChangeButton.setText("Team Red");
         }
+        Toast.makeText(this,""+mConeSize,Toast.LENGTH_SHORT).show();
         Ball_Script2();
         // setTeamToRed(mOnRedTeam); // This call is optional. It will reset your GPS and sensor heading values.
     }
@@ -716,7 +779,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             mGoOrMissionCompleteButton.setText("Mission Complete!");
             mJumboGoOrMissionCompleteButton.setBackgroundResource(R.drawable.red_button);
             mJumboGoOrMissionCompleteButton.setText("Stop");
-            setState(State.NEAR_BALL_SCRIPT);
+            setState(State.INITIAL_STRAIGHT);
         } else {
             setState(State.READY_FOR_MISSION);
         }
@@ -830,6 +893,13 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             }
         }, 3500);
 
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Ball_Script3();
+            }
+        }, 4500);
+
 
     }
 
@@ -873,7 +943,51 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             }
         }, 4500);
 
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Ball_Script1();
+            }
+        }, 5000);
+
     }
 
+    private void ConeDetection(){
+        if(mConeSize>MAX_SIZE_PERCENTAGE){
+            if(mState == State.IMAGE_REC_NEAR) {
+                setState(State.NEAR_BALL_SCRIPT);
+            }
+            else if(mState == State.IMAGE_REC_FAR) {
+                setState(State.FAR_BALL_SCRIPT);
+            }
+            else if(mState == State.IMAGE_REC_HOME) {
+                setState(State.WAITING_FOR_PICKUP);
+            }
+        }
+        if(mConeFound){
+            if(mConeLeftRightLocation<0){ //Cone on Left
+                double error_correction = mConeLeftRightLocation*LEFT_PROPORTIONAL_CONTROL;
+                mLeftDutyCycle = (int)(LEFT_PWM_VALUE_FOR_STRAIGHT-error_correction);
+                sendWheelSpeed(mLeftDutyCycle,RIGHT_PWM_VALUE_FOR_TURN);
+            }
+            else{ // Cone on Right
+                double error_correction = -mConeLeftRightLocation*RIGHT_PROPORTIONAL_CONTROL;
+                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_STRAIGHT-error_correction);
+                sendWheelSpeed(LEFT_PWM_VALUE_FOR_TURN,mRightDutyCycle);
+            }
+        }
+        else{
+//            if(CountNotFound )
+            if(mState == State.IMAGE_REC_NEAR) {
+                setState(State.DRIVE_TOWARDS_NEAR_BALL);
+            }
+            else if(mState == State.IMAGE_REC_FAR) {
+                setState(State.DRIVE_TOWARDS_FAR_BALL);
+            }
+            else if(mState == State.IMAGE_REC_HOME) {
+                setState(State.DRIVE_TOWARDS_HOME);
+            }
+        }
+    }
 
 }
