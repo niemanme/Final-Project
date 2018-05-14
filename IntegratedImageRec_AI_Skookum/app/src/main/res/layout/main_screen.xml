@@ -340,6 +340,50 @@
         style="@style/DisplayText"/>
 
     <TextView
+        android:id="@+id/Target_Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/size_percentage_label"
+        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:text="Target GPS"
+        style="@style/DisplayText"/>
+
+    <TextView
+        android:id="@+id/target_GPS_value"
+        android:layout_alignBaseline="@id/Target_Label"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="---"
+        style="@style/DisplayText"/>
+
+    <TextView
+        android:id="@+id/Distance_Label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/Target_Label"
+        android:textSize="18sp"
+        android:layout_margin="10dp"
+        android:text="Distance: "
+        style="@style/DisplayText"/>
+
+    <TextView
+        android:id="@+id/distance_value"
+        android:layout_alignBaseline="@id/Distance_Label"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="30dp"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="---"
+        style="@style/DisplayText"/>
+
+
+
+    <TextView
         android:id="@+id/right_duty_cycle_textview"
         style="@style/DisplayText"
         android:layout_above="@+id/go_or_mission_complete_button"

@@ -39,6 +39,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private static final double LEFT_PROPORTIONAL_CONTROL = 40;
     private static final double RIGHT_PROPORTIONAL_CONTROL = 35;
 
+    private TextView mTargetGPSTextView, mDistanceTextView;
+
     // Go into Image recognition mode for that ball/mission, when the GPS is within the 20ft range
     // and a small cone has been detected (0.1% = 0.001)
     // If Image rec control takes robot 40ft or more away from cone, revert back to GPS control( Drive Towards)
@@ -115,7 +117,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     protected LinearLayout mJumbotronLinearLayout;
 
 
-    public boolean doImageRec=false;
+    public boolean doImageRec=true;
     // ---------------------- End of UI References ----------------------
 
 
@@ -205,6 +207,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mJumboGoOrMissionCompleteButton = (Button) findViewById(R.id.jumbo_go_or_mission_complete_button);
         mJumbotronLinearLayout = findViewById(R.id.jumbo_linear_layout);
 
+        mTargetGPSTextView = findViewById(R.id.target_GPS_value);
+        mDistanceTextView = findViewById(R.id.distance_value);
         mJumboXTextView = findViewById(R.id.jumbo_x);
         mJumboYTextView = findViewById(R.id.jumbo_y);
 
@@ -245,6 +249,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 //Nothing here. All in loop
                 break;
             case IMAGE_REC_NEAR:
+                ConeDetection();
                 break;
             case NEAR_BALL_SCRIPT:
                 mGpsInfoTextView.setText("---");
@@ -375,6 +380,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     public void loop() {
         super.loop();
 
+        //REMOVE THIS as it is only for NEAR BALL DISTANCE DEBUGGING
+        double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, NEAR_BALL_GPS_X,
+                mNearBallGpsY);
+        mDistanceTextView.setText(" "+distanceFromTarget);
+
         //Log.d(TAG, "This is loop within our subclass of Robot Activity");
         mStateTimeTextView.setText("" + getStateTimeMs() / 1000);
         mGuessXYTextView.setText("(" + (int) mGuessX + ", " + (int) mGuessY + ")");
@@ -424,6 +434,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 seekTargetAt(NEAR_BALL_GPS_X, mNearBallGpsY);
                 break;
             case IMAGE_REC_NEAR:
+                ConeDetection();
                 break;
             case NEAR_BALL_SCRIPT:
 
@@ -432,6 +443,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
                 break;
             case IMAGE_REC_FAR:
+                ConeDetection();
                 break;
             case FAR_BALL_SCRIPT:
                 break;
@@ -439,6 +451,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 seekTargetAt(0,0);
                 break;
             case IMAGE_REC_HOME:
+                ConeDetection();
                 break;
             case WAITING_FOR_PICKUP:
                 if (getStateTimeMs() > 8000) {
@@ -459,6 +472,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         Toast.makeText(this, "Seeking", Toast.LENGTH_SHORT).show();
         int leftDutyCycle = LEFT_PWM_VALUE_FOR_STRAIGHT;
         int rightDutyCycle = RIGHT_PWM_VALUE_FOR_STRAIGHT;
+//        distance
         double targetHeading = NavUtils.getTargetHeading(mCurrentGpsX, mCurrentGpsY, xTarget, yTarget);
         double leftTurnAmount = NavUtils.getLeftTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
         double rightTurnAmount = NavUtils.getRightTurnHeadingDelta(mCurrentSensorHeading, targetHeading);
@@ -470,9 +484,26 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             rightDutyCycle = Math.max(rightDutyCycle, LOWEST_DESIRABLE_DUTY_CYCLE);
         }
 
+        double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, xTarget,
+                yTarget);
+        mTargetGPSTextView.setText("( "+xTarget+", "+yTarget+")");
+        mDistanceTextView.setText(" "+distanceFromTarget);
 //        mCommand = "WHEEL SPEED FORWARD " + leftDutyCycle + " FORWARD " + rightDutyCycle;
 //        mCommandTextView.setText(mCommand);
+
+        if (mState == State.DRIVE_TOWARDS_NEAR_BALL) {
+            if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT && mConeFound) {
+                if(doImageRec){
+                    setState(State.IMAGE_REC_NEAR);
+                }
+                else{
+                    setState(State.NEAR_BALL_SCRIPT);
+                }
+            }
+        }
+
         sendWheelSpeed((int) leftDutyCycle, (int) rightDutyCycle);
+
         //mTargetHeadingTextView.setText(" " + (int) (targetHeading));
 
     }
@@ -513,25 +544,23 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         gpsInfo += "   " + mGpsCounter;
         mGpsInfoTextView.setText(gpsInfo);
 
-        if (mState == State.DRIVE_TOWARDS_NEAR_BALL) {
-            double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, FAR_BALL_GPS_X,
-                    mFarBallGpsY);
-            if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT) {
-                if(doImageRec){
-                    setState(State.IMAGE_REC_NEAR);
-                }
-                else{
 
-                    setState(State.NEAR_BALL_SCRIPT);
-                }
-            }
+        if(mState == State.IMAGE_REC_NEAR){
+            double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, NEAR_BALL_GPS_X,
+                    mNearBallGpsY);
+
         }
 
         if (mState == State.DRIVE_TOWARDS_FAR_BALL) {
             double distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, FAR_BALL_GPS_X,
                     mFarBallGpsY);
             if (distanceFromTarget < ACCEPTED_DISTANCE_AWAY_FT) {
-                setState(State.FAR_BALL_SCRIPT);
+                if(doImageRec){
+                    setState(State.IMAGE_REC_FAR);
+                }
+                else {
+                    setState(State.FAR_BALL_SCRIPT);
+                }
             }
         }
 
@@ -728,11 +757,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     }
 
     public void handleFakeGpsF1(View view) {
-        onLocationChanged(209, 50, 0, null); // Out of range so ignored
+        onLocationChanged(90, 50, 0, null);
     }
 
     public void handleFakeGpsF2(View view) {
-        onLocationChanged(231, 50, 135, null); // Within range!
+        onLocationChanged(90, -50, 135, null);
     }
 
     public void handleFakeGpsF3(View view) {

@@ -268,7 +268,8 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
 
         if (coneFound) {
             mLeftRightLocationTextView.setText(String.format("%.3f", leftRightLocation));
-            mTopBottomLocationTextView.setText(String.format("%.3f", topBottomLocation));
+//            mTopBottomLocationTextView.setText(String.format("%.3f", topBottomLocation));
+            mTopBottomLocationTextView.setText(" "+ mConeFound);
             mSizePercentageTextView.setText(String.format("%.5f", sizePercentage));
         } else {
             mLeftRightLocationTextView.setText("---");
