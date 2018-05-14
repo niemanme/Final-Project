@@ -854,38 +854,56 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String command = getString(R.string.position_command, -9, 107, -61, -157, 119);
+                String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
                 sendCommand(command);
             }
         }, 500);
+
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String command = getString(R.string.position_command, -9, 107, -61, -180, 119);
+                String command = getString(R.string.position_command, -16, 108, -50,-125,0);
+                sendCommand(command);
+            }
+        }, 1000);
+
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, -16, 108, -50,-180,0);
+                sendCommand(command);
+            }
+        }, 1500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, -16, 108, -50,-165,0);
+                sendCommand(command);
+            }
+        }, 1750);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, -3, 140, -90,-180,0);
                 sendCommand(command);
             }
         }, 2000);
+
+        //Go Home without Hitting Shit
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String command = getString(R.string.position_command, -29, 107, -61, -180, 119);
+                String command = getString(R.string.joint_angle_command,4,-125);
                 sendCommand(command);
             }
-        }, 3000);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String command = getString(R.string.position_command, -29, 107, -61, -125, 119);
-                sendCommand(command);
-            }
-        }, 4000);
+        }, 2500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
                 sendCommand(command);
             }
-        }, 4500);
+        }, 3000);
 
     }
 
@@ -895,7 +913,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String command = getString(R.string.position_command, 0, 129, -82, -180, 90);
+                String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
                 sendCommand(command);
             }
         }, 500);
@@ -903,38 +921,48 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String command = getString(R.string.position_command, 0, 127, -84, -180, 90);
+                String command = getString(R.string.position_command, -3, 140, -90,-180,0);
                 sendCommand(command);
             }
         }, 1000);
+
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String command = getString(R.string.position_command, 0, 127, -79, -180, 90);
+                String command = getString(R.string.position_command, -3, 140, -90,-145,0);
+                sendCommand(command);
+            }
+        }, 1500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, -3, 140, -90,-180,0);
+                sendCommand(command);
+            }
+        }, 1750);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, -3, 140, -90,-145,0);
                 sendCommand(command);
             }
         }, 2000);
+
+        //Go Home without Hitting Shit
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                String command = getString(R.string.position_command, 0, 108, -66, -174, 90);
+                String command = getString(R.string.joint_angle_command,4,-125);
                 sendCommand(command);
             }
-        }, 3000);
+        }, 2500);
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
                 sendCommand(command);
             }
-        }, 3500);
-
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Ball_Script3();
-            }
-        }, 4500);
+        }, 3000);
 
 
     }
@@ -943,48 +971,60 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
 
         String attach="ATTACH 111111";
         sendCommand(attach);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String command = getString(R.string.position_command, 9, 107, -61, -157, -119);
-                sendCommand(command);
-            }
-        }, 500);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String command = getString(R.string.position_command, 9, 107, -61, -180, -119);
-                sendCommand(command);
-            }
-        }, 2000);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String command = getString(R.string.position_command, 29, 107, -61, -180, -119);
-                sendCommand(command);
-            }
-        }, 3000);
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                String command = getString(R.string.position_command, 29, 107, -61, -125, -119);
-                sendCommand(command);
-            }
-        }, 4000);
+
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
                 sendCommand(command);
             }
-        }, 4500);
+        }, 500);
 
         mCommandHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Ball_Script1();
+                String command = getString(R.string.position_command, 23, 125, -79,-125,0);
+                sendCommand(command);
             }
-        }, 5000);
+        }, 1000);
+
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, 23, 125, -79,-180,0);
+                sendCommand(command);
+            }
+        }, 1500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, 23, 125, -79,-145,0);
+                sendCommand(command);
+            }
+        }, 1750);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, -3, 140, -90,-180,0);
+                sendCommand(command);
+            }
+        }, 2000);
+
+        //Go Home without Hitting Shit
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.joint_angle_command,4,-125);
+                sendCommand(command);
+            }
+        }, 2500);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String command = getString(R.string.position_command, 0, 90, 0, -90, 90);
+                sendCommand(command);
+            }
+        }, 3000);
 
     }
 
@@ -1032,6 +1072,16 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 setState(State.WAITING_FOR_PICKUP);
             }
         }
+    }
+
+    public void handleBall2(View view) {
+        Ball_Script2();
+    }
+    public void handleBall3(View view) {
+        Ball_Script3();
+    }
+    public void handleBall1(View view) {
+        Ball_Script1();
     }
 
 
