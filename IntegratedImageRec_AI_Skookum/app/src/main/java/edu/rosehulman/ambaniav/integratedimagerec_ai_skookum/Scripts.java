@@ -47,14 +47,14 @@ public class Scripts {
             }
         }, driveTimeMs);
 
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mActivity.mState == GolfBallDeliveryActivity.State.NEAR_BALL_SCRIPT) {
-                    mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_FAR_BALL);
-                }
-            }
-        }, driveTimeMs + ARM_REMOVAL_TIME);
+//        mCommandHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (mActivity.mState == GolfBallDeliveryActivity.State.NEAR_BALL_SCRIPT) {
+//                    mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_FAR_BALL);
+//                }
+//            }
+//        }, driveTimeMs + ARM_REMOVAL_TIME);
 
 
     }

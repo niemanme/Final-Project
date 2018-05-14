@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,13 +34,14 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private static final int RIGHT_PWM_VALUE_FOR_TURN = 180;
 
 
-    private static final int LOWEST_DESIRABLE_DUTY_CYCLE=150;
+    private static final int LOWEST_DESIRABLE_DUTY_CYCLE=100;
 
-    private static final double MAX_SIZE_PERCENTAGE = 0.0025; // Criteria to drop the ball
-    private static final double LEFT_PROPORTIONAL_CONTROL = 20;
-    private static final double RIGHT_PROPORTIONAL_CONTROL = 15;
+    private static final double MAX_SIZE_PERCENTAGE = 0.07; // Criteria to drop the ball
+    private static final double LEFT_PROPORTIONAL_CONTROL = 10;
+    private static final double RIGHT_PROPORTIONAL_CONTROL = 5;
 
     private TextView mTargetGPSTextView, mDistanceTextView;
+    private RelativeLayout mMainLayout;
 
     // Go into Image recognition mode for that ball/mission, when the GPS is within the 20ft range
     // and a small cone has been detected (0.1% = 0.001)
@@ -115,7 +117,6 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private TextView mJumboXTextView, mJumboYTextView;
 
     protected LinearLayout mJumbotronLinearLayout;
-
 
     public boolean doImageRec=true;
     // ---------------------- End of UI References ----------------------
@@ -211,6 +212,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         mDistanceTextView = findViewById(R.id.distance_value);
         mJumboXTextView = findViewById(R.id.jumbo_x);
         mJumboYTextView = findViewById(R.id.jumbo_y);
+       mMainLayout = findViewById(R.id.Main_Relative_Layount);
 
 
         // When you start using the real hardware you don't need test buttons.
@@ -243,13 +245,14 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 sendWheelSpeed(0, 0);
                 break;
             case INITIAL_STRAIGHT:
-                sendWheelSpeed(LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE,LOWEST_DESIRABLE_DUTY_CYCLE);
+                sendWheelSpeed(90,LOWEST_DESIRABLE_DUTY_CYCLE);
                 break;
             case DRIVE_TOWARDS_NEAR_BALL:
                 //Nothing here. All in loop
                 break;
             case IMAGE_REC_NEAR:
                 ConeDetection();
+
                 break;
             case NEAR_BALL_SCRIPT:
                 sendWheelSpeed(0,0);
@@ -420,7 +423,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 Log.d(TAG,"Turn Left Some.");
             }
             if (mConeSize>0.1){
-                Log.d(TAG,"Turn Left Some.");
+                Log.d(TAG,"Get Closer.");
             }
         }
         switch (mState) {
@@ -446,8 +449,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 break;
             case IMAGE_REC_FAR:
                 ConeDetection();
+                sendWheelSpeed(0,0);
                 break;
             case FAR_BALL_SCRIPT:
+                sendWheelSpeed(0,0);
                 break;
             case DRIVE_TOWARDS_HOME:
 //                seekTargetAt(0,0);
@@ -536,11 +541,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
         }
 
         // TODO: Once image rec is done, move this area to the loop function!
-        if (mCurrentGpsHeading != NO_HEADING) {
-            mJumbotronLinearLayout.setBackgroundColor(Color.GREEN);
-        } else {
-            mJumbotronLinearLayout.setBackgroundColor(Color.LTGRAY);
-        }
+//        if (mCurrentGpsHeading != NO_HEADING) {
+//            mJumbotronLinearLayout.setBackgroundColor(Color.GREEN);
+//        } else {
+//            mJumbotronLinearLayout.setBackgroundColor(Color.LTGRAY);
+//        }
 
 
         gpsInfo += "   " + mGpsCounter;
@@ -984,29 +989,22 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     }
 
     private void ConeDetection(){
-        if(mConeSize>MAX_SIZE_PERCENTAGE){
-            if(mState == State.IMAGE_REC_NEAR) {
-                setState(State.NEAR_BALL_SCRIPT);
-            }
-            else if(mState == State.IMAGE_REC_FAR) {
-                setState(State.FAR_BALL_SCRIPT);
-            }
-            else if(mState == State.IMAGE_REC_HOME) {
-                setState(State.WAITING_FOR_PICKUP);
-            }
-        }
+
         if(mConeFound){
             if(mConeLeftRightLocation<0){ //Cone on Left, left goes slower right goes faster
-                double error_correction = mConeLeftRightLocation*RIGHT_PROPORTIONAL_CONTROL;
-                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_TURN+error_correction);
-                mLeftDutyCycle = (int)(LEFT_PWM_VALUE_FOR_TURN);
-                sendWheelSpeed(mLeftDutyCycle,RIGHT_PWM_VALUE_FOR_TURN);
+//                double error_correctmConeLeftRightLocationion  = *RIGHT_PROPORTIONAL_CONTROL;
+//                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_TURN+error_correction);
+//                mLeftDutyCycle = (int)(LEFT_PWM_VALUE_FOR_TURN);
+                mMainLayout.setBackgroundColor(Color.RED);
+                sendWheelSpeed(60,120);
             }
             else{ // Cone on Right
-                double error_correction = -mConeLeftRightLocation*LEFT_PROPORTIONAL_CONTROL;
-                mLeftDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_STRAIGHT+error_correction);
-                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_TURN);
-                sendWheelSpeed(mLeftDutyCycle,mRightDutyCycle);
+//                double error_correction = -mConeLeftRightLocation*LEFT_PROPORTIONAL_CONTROL;
+//                mLeftDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_STRAIGHT+error_correction);
+//                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_TURN);
+                sendWheelSpeed(120,60);
+                mMainLayout.setBackgroundColor(Color.BLUE);
+
             }
         }
         else{
@@ -1021,6 +1019,20 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 setState(State.DRIVE_TOWARDS_HOME);
             }
         }
+        if(mConeSize>MAX_SIZE_PERCENTAGE){
+            if(mState == State.IMAGE_REC_NEAR) {
+                mMainLayout.setBackgroundColor(Color.BLACK);
+                sendWheelSpeed( 0,0);
+                setState(State.NEAR_BALL_SCRIPT);
+            }
+            else if(mState == State.IMAGE_REC_FAR) {
+                setState(State.FAR_BALL_SCRIPT);
+            }
+            else if(mState == State.IMAGE_REC_HOME) {
+                setState(State.WAITING_FOR_PICKUP);
+            }
+        }
     }
+
 
 }

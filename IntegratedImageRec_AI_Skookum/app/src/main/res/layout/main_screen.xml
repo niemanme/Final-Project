@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/Main_Relative_Layount"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#444"
@@ -275,112 +276,110 @@
 
     <TextView
         android:id="@+id/left_right_location_label"
+        style="@style/DisplayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/guess_location_label"
-        android:textSize="18sp"
         android:layout_margin="10dp"
         android:text="Left/Right Location"
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/left_right_location_value"
-        android:layout_alignBaseline="@id/left_right_location_label"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="30dp"
-        android:textSize="18sp"
+        style="@style/DisplayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="---"
-        style="@style/DisplayText"
+        android:layout_alignBaseline="@id/left_right_location_label"
+        android:layout_alignParentRight="true"
         android:layout_marginLeft="20dp"
+        android:layout_marginRight="30dp"
         android:layout_marginTop="5dp"
-        />
+        android:text="---"
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/top_bottom_location_label"
+        style="@style/DisplayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/left_right_location_label"
-        android:textSize="18sp"
         android:layout_margin="10dp"
         android:text="Top/Bottom Location"
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/top_bottom_location_value"
+        style="@style/DisplayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/top_bottom_location_label"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="---"
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/size_percentage_label"
+        style="@style/DisplayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/top_bottom_location_label"
-        android:textSize="18sp"
         android:layout_margin="10dp"
         android:text="Size Percentage"
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/size_percentage_value"
+        style="@style/DisplayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/size_percentage_label"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="---"
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/Target_Label"
+        style="@style/DisplayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/size_percentage_label"
-        android:textSize="18sp"
         android:layout_margin="10dp"
         android:text="Target GPS"
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/target_GPS_value"
+        style="@style/DisplayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/Target_Label"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="---"
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/Distance_Label"
+        style="@style/DisplayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/Target_Label"
-        android:textSize="18sp"
         android:layout_margin="10dp"
         android:text="Distance: "
-        style="@style/DisplayText"/>
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/distance_value"
+        style="@style/DisplayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBaseline="@id/Distance_Label"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="---"
-        style="@style/DisplayText"/>
-
+        android:textSize="18sp" />
 
 
     <TextView
