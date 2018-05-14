@@ -36,8 +36,8 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
     private static final int LOWEST_DESIRABLE_DUTY_CYCLE=150;
 
     private static final double MAX_SIZE_PERCENTAGE = 0.0025; // Criteria to drop the ball
-    private static final double LEFT_PROPORTIONAL_CONTROL = 40;
-    private static final double RIGHT_PROPORTIONAL_CONTROL = 35;
+    private static final double LEFT_PROPORTIONAL_CONTROL = 20;
+    private static final double RIGHT_PROPORTIONAL_CONTROL = 15;
 
     private TextView mTargetGPSTextView, mDistanceTextView;
 
@@ -243,7 +243,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 sendWheelSpeed(0, 0);
                 break;
             case INITIAL_STRAIGHT:
-                sendWheelSpeed(LEFT_PWM_VALUE_FOR_STRAIGHT,RIGHT_PWM_VALUE_FOR_STRAIGHT);
+                sendWheelSpeed(LOWEST_DESIRABLE_SEEKING_DUTY_CYCLE,LOWEST_DESIRABLE_DUTY_CYCLE);
                 break;
             case DRIVE_TOWARDS_NEAR_BALL:
                 //Nothing here. All in loop
@@ -252,6 +252,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 ConeDetection();
                 break;
             case NEAR_BALL_SCRIPT:
+                sendWheelSpeed(0,0);
                 mGpsInfoTextView.setText("---");
                 mGuessXYTextView.setText("---");
                 mScripts.nearBallScript();
@@ -426,7 +427,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case READY_FOR_MISSION:
                 break;
             case INITIAL_STRAIGHT:
-                if (getStateTimeMs() > 5000){
+                if (getStateTimeMs() > 2500){
                     setState(State.DRIVE_TOWARDS_NEAR_BALL);
                 }
                 break;
@@ -437,10 +438,11 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 ConeDetection();
                 break;
             case NEAR_BALL_SCRIPT:
-
+                sendWheelSpeed(0,0);
                 break;
             case DRIVE_TOWARDS_FAR_BALL:
-                seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
+                sendWheelSpeed(0,0);
+//                seekTargetAt(FAR_BALL_GPS_X, mFarBallGpsY);
                 break;
             case IMAGE_REC_FAR:
                 ConeDetection();
@@ -448,7 +450,7 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             case FAR_BALL_SCRIPT:
                 break;
             case DRIVE_TOWARDS_HOME:
-                seekTargetAt(0,0);
+//                seekTargetAt(0,0);
                 break;
             case IMAGE_REC_HOME:
                 ConeDetection();
@@ -994,15 +996,17 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
             }
         }
         if(mConeFound){
-            if(mConeLeftRightLocation<0){ //Cone on Left
-                double error_correction = mConeLeftRightLocation*LEFT_PROPORTIONAL_CONTROL;
-                mLeftDutyCycle = (int)(LEFT_PWM_VALUE_FOR_STRAIGHT-error_correction);
+            if(mConeLeftRightLocation<0){ //Cone on Left, left goes slower right goes faster
+                double error_correction = mConeLeftRightLocation*RIGHT_PROPORTIONAL_CONTROL;
+                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_TURN+error_correction);
+                mLeftDutyCycle = (int)(LEFT_PWM_VALUE_FOR_TURN);
                 sendWheelSpeed(mLeftDutyCycle,RIGHT_PWM_VALUE_FOR_TURN);
             }
             else{ // Cone on Right
-                double error_correction = -mConeLeftRightLocation*RIGHT_PROPORTIONAL_CONTROL;
-                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_STRAIGHT-error_correction);
-                sendWheelSpeed(LEFT_PWM_VALUE_FOR_TURN,mRightDutyCycle);
+                double error_correction = -mConeLeftRightLocation*LEFT_PROPORTIONAL_CONTROL;
+                mLeftDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_STRAIGHT+error_correction);
+                mRightDutyCycle = (int)(RIGHT_PWM_VALUE_FOR_TURN);
+                sendWheelSpeed(mLeftDutyCycle,mRightDutyCycle);
             }
         }
         else{
