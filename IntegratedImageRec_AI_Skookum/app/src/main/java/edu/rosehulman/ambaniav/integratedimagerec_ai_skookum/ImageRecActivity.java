@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
@@ -37,6 +38,7 @@ import me435.RobotActivity;
 
 public class ImageRecActivity extends RobotActivity implements CameraBridgeViewBase.CvCameraViewListener2, View.OnTouchListener
 {
+    protected int CounterNotFound = 0;
 
     public static final String TAG = "ConeFinder";
 
@@ -97,12 +99,19 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
     protected ViewFlipper mViewFlipper;
     private Mat mRgba;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // The topmost Activity that uses views should load this line...
         setContentView(R.layout.activity_main);
+
+
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference myRef = database.getReference("message");
+
+
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mLeftRightLocationTextView = findViewById(R.id.left_right_location_value);
@@ -261,6 +270,7 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
     /** Displays the blob target info in the text views. */
     public void onImageRecComplete(boolean coneFound, double leftRightLocation, double topBottomLocation, double sizePercentage) {
 
+
         mConeFound = coneFound;
         mConeLeftRightLocation = leftRightLocation;
         mConeSize = sizePercentage;
@@ -268,13 +278,14 @@ public class ImageRecActivity extends RobotActivity implements CameraBridgeViewB
 
         if (coneFound) {
             mLeftRightLocationTextView.setText(String.format("%.3f", leftRightLocation));
-//            mTopBottomLocationTextView.setText(String.format("%.3f", topBottomLocation));
-            mTopBottomLocationTextView.setText(" "+ mConeFound);
+            mTopBottomLocationTextView.setText(String.format("%.3f", topBottomLocation));
             mSizePercentageTextView.setText(String.format("%.5f", sizePercentage));
+            CounterNotFound = 0;
         } else {
             mLeftRightLocationTextView.setText("---");
             mTopBottomLocationTextView.setText("---");
             mSizePercentageTextView.setText("---");
+            CounterNotFound++;
         }
     }
 

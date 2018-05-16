@@ -19,6 +19,8 @@
 
         <include layout="@layout/jumbotron" />
 
+        <include layout="@layout/setup_screen" />
+
     </ViewFlipper>
 
 </RelativeLayout>

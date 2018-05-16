@@ -12,7 +12,7 @@ public class Scripts {
 
     private GolfBallDeliveryActivity mActivity;
 
-    private int ARM_REMOVAL_TIME = 5000;
+    private int ARM_REMOVAL_TIME = 3000;
 
     public Scripts(GolfBallDeliveryActivity activity) {
         mActivity = activity;
@@ -47,36 +47,37 @@ public class Scripts {
             }
         }, driveTimeMs);
 
-//        mCommandHandler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (mActivity.mState == GolfBallDeliveryActivity.State.NEAR_BALL_SCRIPT) {
-//                    mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_FAR_BALL);
-//                }
-//            }
-//        }, driveTimeMs + ARM_REMOVAL_TIME);
+        mCommandHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (mActivity.mState == GolfBallDeliveryActivity.State.NEAR_BALL_SCRIPT) {
+                    mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_FAR_BALL);
+                }
+            }
+        }, driveTimeMs + ARM_REMOVAL_TIME);
 
 
     }
 
     public void farBallScript() {
-        mActivity.sendWheelSpeed(0, 0);
-        removeBallAtLocation(mActivity.mFarBallLocation);
 
-        mCommandHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mActivity.sendWheelSpeed(0,0);
-
-                if (mActivity.mWhiteBallLocation != 0) {
-                    removeBallAtLocation(mActivity.mWhiteBallLocation);
-                }
-                if (mActivity.mState == GolfBallDeliveryActivity.State.FAR_BALL_SCRIPT) {
-                    mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_HOME);
-                }
-
-            }
-        }, ARM_REMOVAL_TIME);
+//        mActivity.sendWheelSpeed(0, 0);
+//        removeBallAtLocation(mActivity.mFarBallLocation);
+//
+//        mCommandHandler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                mActivity.sendWheelSpeed(0,0);
+//
+//                if (mActivity.mWhiteBallLocation != 0) {
+//                    removeBallAtLocation(mActivity.mWhiteBallLocation);
+//                }
+//                if (mActivity.mState == GolfBallDeliveryActivity.State.FAR_BALL_SCRIPT) {
+//                    mActivity.setState(GolfBallDeliveryActivity.State.DRIVE_TOWARDS_HOME);
+//                }
+//
+//            }
+//        }, ARM_REMOVAL_TIME);
     }
 
 
@@ -103,7 +104,5 @@ public class Scripts {
             }
         }, ARM_REMOVAL_TIME);
     }
-
-
 
 }
