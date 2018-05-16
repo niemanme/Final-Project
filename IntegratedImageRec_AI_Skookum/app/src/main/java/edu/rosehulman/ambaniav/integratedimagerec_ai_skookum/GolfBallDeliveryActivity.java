@@ -579,9 +579,9 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 sendWheelSpeed(0, 0);
                 break;
             case DRIVE_TOWARDS_HOME:
-                seekTargetAt(0, 0);
+                seekTargetAt(-10, 0);
 
-                distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, NEAR_BALL_GPS_X, mNearBallGpsY);
+                distanceFromTarget = NavUtils.getDistance(mCurrentGpsX, mCurrentGpsY, -10, 0);
                 mDistanceTextView.setText(" " + distanceFromTarget);
                 if(distanceFromTarget < accepteddistance){
                     setState(State.WAITING_FOR_PICKUP);
@@ -598,7 +598,10 @@ public class GolfBallDeliveryActivity extends ImageRecActivity {
                 }
                 break;
             case SEEKING_HOME:
-                seekTargetAt(0, 0);
+                seekTargetAt(-10, 0);
+                if (getStateTimeMs() > 2000) {
+                    setState(State.WAITING_FOR_PICKUP);
+                }
                 break;
         }
     }
